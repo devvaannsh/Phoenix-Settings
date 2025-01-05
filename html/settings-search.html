@@ -3,6 +3,46 @@
         <div class="search-icon">🔍</div>
         <input class="search-input-box" type="text" placeholder="Search settings..." />
     </div>
-    
-    <hr class="divider">
+
+    <hr class="divider" />
+
+    <!-- This is the main container inside which all the menus, their settings and everything will come-->
+    <div class="container">
+        <!-- Inside this all the menu options will appear like 'Editor', 'Appearance', 'Extensions', etc-->
+        <!-- If the menu item has class 'has-sub-menu' then a dropdown list will open when clicked on it -->
+        <div class="menus-wrapper">
+            <div class="menu-item">Editor</div>
+            <div class="menu-item">Appearance</div>
+            <div class="menu-item has-sub-menu">
+                <div class="menu-item-name">Extensions</div>
+                <div class="open-sub-menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                        <path
+                            d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
+                            fill="white" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <hr class="vertical-divider" />
+
+        <div class="settings-wrapper">
+            <div class="menu-item-heading">Editor</div>
+
+            <!-- All the settings for the selected menu item will be displayed inside this-->
+            <div class="settings">
+                <div class="setting">
+                    <div class="setting-title">Font Family</div>
+                    <div class="setting-description">
+                        Specify the font family in the editor
+                    </div>
+                    <div class="setting-value large-input">
+                        <input type="text">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

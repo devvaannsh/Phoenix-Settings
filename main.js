@@ -39,7 +39,5 @@ define(function (require, exports, module) {
 
     AppInit.appReady(function () {
         console.log("Phoenix Settings Extension Initialized!");
-        
-
     });
 });
