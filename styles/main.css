@@ -97,6 +97,12 @@
     color: white;
 }
 
+.menu-item.active {
+    background-color: #757568;
+    padding: 10px 4px;
+    border-radius: 4px;
+}
+
 .menu-item:hover {
     color: #cdcdcd;
 }
@@ -111,6 +117,10 @@
     height: 14px;
     width: 14px;
     padding-top: 2px;
+}
+
+.open-sub-menu.active {
+    background-color: #757568;
 }
 
 .menu-item-heading {

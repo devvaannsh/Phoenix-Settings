@@ -41,6 +41,9 @@ function handleSettingsButtonClick() {
         SettingsManager._addMenuItemWithSubMenu('Extensions');
         SettingsManager._addMenuItem('Advanced');
         
+        // this sets the first menu item as active
+        SettingsManager._setInitialActiveMenuItem();
+        
     }
     togglePanelVisibility();
 }
