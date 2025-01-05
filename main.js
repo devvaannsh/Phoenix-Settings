@@ -6,11 +6,13 @@ define(function (require, exports, module) {
         ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
         WorkspaceManager = brackets.getModule("view/WorkspaceManager");
 
+    const SettingsManager = require("./settings-manager");
+
     let pluginPanel; // Store panel reference
     let panelMinSize = window.innerWidth / 2;
 
     // Import HTML content
-    let panelHTML = require("text!html/settings-search.html");
+    let panelHTML = require("text!html/main.html");
     // Load stylesheets
     ExtensionUtils.loadStyleSheet(module, "styles/main.css");
 
@@ -22,14 +24,26 @@ define(function (require, exports, module) {
         }
     }
 
-    function handleSettingsButtonClick() {
-        if (!pluginPanel) {
-            const $panel = $(panelHTML);
-            const $toolbarIcon = $("<a>");
-            pluginPanel = WorkspaceManager.createPluginPanel("phoenix.settings", $panel, panelMinSize, $toolbarIcon);
-        }
-        togglePanelVisibility();
+function handleSettingsButtonClick() {
+    if (!pluginPanel) {
+        const $panel = $(panelHTML);
+        const $toolbarIcon = $("<a>");
+        pluginPanel = WorkspaceManager.createPluginPanel("phoenix.settings", $panel, panelMinSize, $toolbarIcon);
+        
+        // add things here!
+        SettingsManager._addMenuItem('Editor');
+        SettingsManager._addMenuItem('Appearance');
+        SettingsManager._addMenuItem('Linting');
+        SettingsManager._addMenuItem('Code Hints');
+        SettingsManager._addMenuItem('Live Preview');
+        SettingsManager._addMenuItem('Files');
+        SettingsManager._addMenuItem('Search');
+        SettingsManager._addMenuItemWithSubMenu('Extensions');
+        SettingsManager._addMenuItem('Advanced');
+        
     }
+    togglePanelVisibility();
+}
 
     const MY_COMMAND_ID = "phoenix_settings";
     CommandManager.register("Settings", MY_COMMAND_ID, handleSettingsButtonClick);
