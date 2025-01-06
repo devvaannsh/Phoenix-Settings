@@ -51,13 +51,13 @@
     margin: 20px 0; 
     border: 1px solid #555;
 }
+
 .container {
     display: flex;
     gap: 12px;
     /*background-color: antiquewhite;*/
     height: 632px;
     width: 600px;
-    overflow: hidden;
     padding: 0 !important;
 }
 
@@ -65,14 +65,16 @@
     display: flex;
     flex-direction: column;
     text-align: left;
-    padding-left: 14px;
-    padding-top: 48px;
+    padding-left: 4px;
+    padding-top: 36px;
+    box-sizing: border-box;
     gap: 18px;
     /*background-color: aquamarine;*/
     height: 100%;
     width: 160px;
     min-width: 160px;
     font-size: larger;
+    overflow: scroll;
 }
 
 .vertical-divider {
@@ -89,8 +91,10 @@
     height: 100%;
     width: 410px;
     text-align: left;
-    padding-left: 28px;
+    padding-left: 24px;
     padding-top: 32px;
+    box-sizing: border-box;
+    overflow: scroll;
 }
 
 .menu-item {
@@ -133,7 +137,7 @@
     margin-top: 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 28px;
 }
 
 .setting {
@@ -154,6 +158,26 @@
     color: #cdcdcd;
 }
 
-.setting-value.large-input input{
-    width: 340px;
+
+.setting-value.large-input input {
+    width: 320px !important;
 }
+
+.setting-value.medium-input input {
+    width: 240px !important;
+}
+
+.setting-value.small-input input {
+    width: 160px !important;
+}
+
+.setting-value.checkbox input {
+    margin-top: 4px;
+    transform: scale(1.5);
+}
+
+/* to add styles to other properties use:
+ * `.setting-value.dropdown select`
+ * `.setting-value.scroll-bar input`
+ * */ 
+
