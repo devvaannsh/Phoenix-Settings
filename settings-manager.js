@@ -1,24 +1,28 @@
+
 define(function (require, exports, module) {
     "use strict";
     // Import HTML content
     let panelHTML = require("text!html/settings-search.html");
-
+    
+    
     /**
      * @private
-     *
-     * Handles the click event for menu items
-     *
-     * @param {HTMLElement} clickedItem - The menu item that was clicked
+     * 
+     * Responsible to remove the 'active' class from all the menu items.
+     * This function is called whenever user switches between the menu items.
+     * So to remove the 'active' class from the previous menu-item, we call this function.
      */
-    function _handleMenuItemClick(clickedItem) {
-        // Remove active class from all menu items
+    function _removeActiveClassFromMenuItems() {
         const allMenuItems = document.querySelectorAll(".menu-item");
         allMenuItems.forEach((item) => {
             item.classList.remove("active");
-            // Reset all sub-menu chevrons to right position
+            
+            // Reset all sub-menu chevrons to default.
+            // By default 'chevron-right' icon is displayed
             if (item.classList.contains("has-sub-menu")) {
                 // to remove default background style from chevron arrow
                 document.querySelector(".open-sub-menu").classList.remove("active");
+                
                 const path = item.querySelector("path");
                 path.setAttribute(
                     "d",
@@ -26,7 +30,19 @@ define(function (require, exports, module) {
                 );
             }
         });
-
+    }
+    
+    
+    /**
+     * @private
+     * Handles the click event for menu items
+     *
+     * @param {HTMLElement} clickedItem | The menu item that was clicked
+     */
+    function _handleMenuItemClick(clickedItem) {
+        // Remove active class from all menu items
+        _removeActiveClassFromMenuItems();
+        
         // Add active class to clicked item
         clickedItem.classList.add("active");
 
@@ -42,38 +58,43 @@ define(function (require, exports, module) {
         }
     }
 
+    
     /**
      * @private
-     * Sets the first menu item as active if it exists
+     * 
+     * [Internal API] (Not to be used by extension devs)
+     * Sets the first menu item as active
      */
     function _setInitialActiveMenuItem() {
         const menusWrapper = document.querySelector("#menus-wrapper");
         if (menusWrapper) {
             const firstMenuItem = menusWrapper.querySelector(".menu-item");
+            
+            // make sure that there is some existing menu item
             if (firstMenuItem) {
                 firstMenuItem.classList.add("active");
             }
         }
     }
 
+    
     /**
      * @private
-     *
-     * This adds a menu item to the settings panel
+     * 
+     * [Internal API] (Not to be used by extension devs)
+     * Responsible to add a menu item to the settings panel
      *
      * @param {String} name | The name that will be displayed in the panel.
-     * @param {Number} [index] | Optional. The position of the menu item. If not provided or invalid, item will be added at the end.
-     * @throws {TypeError} If name is not a string.
+     * @param {Number | undefined} [index] | The position where the menu item is to be added. If the index is not provided or the index is invalid, then in that case the menu item is added at the end. If a valid index is provided it is added at that position. Starts from [1]
+     * @return [HTMLElement] returns the html element after adding. This is generally not needed. Just calling this method will add the required menu item to the settings panel.
      */
     function _addMenuItem(name, index) {
-        // Validate name parameter
+        // make sure the name parameter is valid
         if (typeof name !== "string") {
             throw new TypeError("Menu item name must be a string");
         }
 
-        // Get the actual menus wrapper from the current panel
         const menusWrapper = document.querySelector("#menus-wrapper");
-
         if (!menusWrapper) {
             console.error("Menus wrapper not found in the panel");
             return;
@@ -84,32 +105,32 @@ define(function (require, exports, module) {
         menuItem.className = "menu-item";
         menuItem.textContent = name;
 
-        // Add click event listener
+        // add the click event listener to listen for clicks on this menu item
         menuItem.addEventListener("click", function () {
             _handleMenuItemClick(this);
         });
 
-        // Get existing menu items to determine valid index range
+        // get the existing menu items to get the last valid index
         const existingItems = menusWrapper.getElementsByClassName("menu-item");
 
         // Validate and handle index
         if (index !== undefined) {
-            // Check if index is a number and within valid range
+            // make sure the index is a number and within the valid range.
             if (
                 typeof index === "number" &&
                 Number.isInteger(index) &&
                 index > 0 &&
                 index <= existingItems.length + 1
             ) {
-                // Insert at specified position
+                // insert the new menu item at the specified index
                 const referenceNode = existingItems[index - 1] || null;
                 menusWrapper.insertBefore(menuItem, referenceNode);
             } else {
-                // Invalid index, append to end
+                // if the index is invalid, add to the last
                 menusWrapper.appendChild(menuItem);
             }
         } else {
-            // No index provided, append to end
+            // index not provided, add to the last
             menusWrapper.appendChild(menuItem);
         }
 
@@ -121,14 +142,16 @@ define(function (require, exports, module) {
         return menuItem;
     }
 
+    
     /**
      * @private
      *
+     * [Internal API] (Not to be used by extension devs)
      * This adds a menu item with sub-menu functionality to the settings panel
      *
      * @param {String} name | The name that will be displayed in the panel.
-     * @param {Number} [index] | Optional. The position of the menu item. If not provided or invalid, item will be added at the end.
-     * @throws {TypeError} If name is not a string.
+     * @param {Number | undefined} [index] | The position where the menu item is to be added. If the index is not provided or the index is invalid, then in that case the menu item is added at the end. If a valid index is provided it is added at that position. Starts from [1]
+     * @return [HTMLElement] returns the html element after adding. This is generally not needed. Just calling this method will add the required menu item to the settings panel.
      */
     function _addMenuItemWithSubMenu(name, index) {
         // Validate name parameter
@@ -175,7 +198,7 @@ define(function (require, exports, module) {
         menuItem.appendChild(menuItemName);
         menuItem.appendChild(openSubMenu);
 
-        // Add click event listener
+        // Add click event listener to listen for click events on this menu item
         menuItem.addEventListener("click", function () {
             _handleMenuItemClick(this);
         });
@@ -190,7 +213,7 @@ define(function (require, exports, module) {
 
         // Validate and handle index
         if (index !== undefined) {
-            // Check if index is a number and within valid range
+            // make sure index is a number and within valid range
             if (
                 typeof index === "number" &&
                 Number.isInteger(index) &&
