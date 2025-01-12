@@ -6,9 +6,6 @@ define(function (require, exports, module) {
         ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
         WorkspaceManager = brackets.getModule("view/WorkspaceManager");
 
-    // Import scripts
-    const SettingsAPI = require("./settings-api");
-
     // Import HTML content
     let panelHTML = require("text!htmlContent/main.html");
     // Load stylesheets
@@ -42,6 +39,23 @@ define(function (require, exports, module) {
         togglePanelVisibility();
     }
 
+    
+    /**
+     * This function is called when the extension is initialized.
+     */
+    function init() {
+        
+        // call this functon so that the plugin panel gets initialized. If we don't do this SettingsAPI script won't be able to use the DOM elements.
+        handleSettingsButtonClick();
+        // hide the panel, as user's click has not triggered it.
+        togglePanelVisibility();
+        
+        // Import scripts. It is important to import it inside this function else document.querySelector will not be able to fetch any element from the HTML
+        require(["./src/settings-api"], function (SettingsAPI) {
+            //
+        });
+    }
+
     const MY_COMMAND_ID = "phoenix_settings";
     CommandManager.register("Settings", MY_COMMAND_ID, handleSettingsButtonClick);
 
@@ -50,5 +64,6 @@ define(function (require, exports, module) {
 
     AppInit.appReady(function () {
         console.log("Phoenix Settings Extension Initialized!");
+        init();
     });
 });
