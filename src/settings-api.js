@@ -22,8 +22,8 @@ define(function (require, exports, module) {
         NUMBER: "number"
     };
 
-    // DOM elements (to improve efficiency as we won't need to get the element everytime while working with it)
-    const MENUS_WRAPPER = document.querySelector("#menus-wrapper");
+    // Fetch the DOM element (added to global to improve efficiency as we won't need to fetch it everytime while working with it)
+    const SECTIONS_WRAPPER = document.querySelector("#sections-wrapper");
 
     /**
      * This function is responsible to add sections to the settings panel
@@ -31,22 +31,25 @@ define(function (require, exports, module) {
      * @param {String} sectionName - the name of the section, this will be displayed in the UI
      */
     function _createMainSection(sectionName) {
-        if (!MENUS_WRAPPER) {
-            console.error("Menus wrapper not found in the panel");
+        if (!SECTIONS_WRAPPER) {
+            console.error("Sections wrapper not found in the panel");
             return;
         }
 
         // Create the new menu item
-        const menuItem = document.createElement("div");
-        menuItem.className = "menu-item";
-        menuItem.textContent = sectionName;
+        const section = document.createElement("div");
+        section.className = "section";
+        section.textContent = sectionName;
 
-        MENUS_WRAPPER.appendChild(menuItem);
+        SECTIONS_WRAPPER.appendChild(section);
     }
 
-
-    // Loop through all the section items and create main sections
-    Object.values(SECTIONS).forEach((sectionName) => {
-        _createMainSection(sectionName);
-    });
+    function _init() {
+        // Loop through all the section items and create main sections
+        Object.values(SECTIONS).forEach((sectionName) => {
+            _createMainSection(sectionName);
+        });
+    }
+    
+    _init();
 });

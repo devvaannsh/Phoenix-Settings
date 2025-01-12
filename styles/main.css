@@ -61,7 +61,7 @@
     padding: 0 !important;
 }
 
-.menus-wrapper {
+.sections-wrapper {
     display: flex;
     flex-direction: column;
     text-align: left;
@@ -97,21 +97,21 @@
     overflow: scroll;
 }
 
-.menu-item {
+.section {
     color: white;
 }
 
-.menu-item.active {
+.section.active {
     background-color: #757568;
     padding: 10px 4px;
     border-radius: 4px;
 }
 
-.menu-item:hover {
+.section:hover {
     color: #cdcdcd;
 }
 
-.menu-item.has-sub-menu {
+.section.has-sub-section {
     display: flex;
     gap: 8px;
 }
