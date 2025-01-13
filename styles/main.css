@@ -1,0 +1,209 @@
+.main {
+    height: 100vh;
+    width: 100vw;
+    max-width: 600px;
+    padding: 20px;
+    background-color: #2c2c2c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+
+.search-wrapper {
+    margin-left: 40px;
+    height: 48px;
+    width: 480px;
+    display: flex;
+    gap: 12px;
+    background-color: #555;
+    border-radius: 12px;
+    border: 1px solid black;
+    overflow: hidden;
+}
+
+.search-input-box {
+    height: 100% !important;
+    width: 100%;
+    background-color: #555;
+    color: #bbb;
+    font-size: 18px !important;
+    border: none !important;
+    outline: none !important;
+}
+
+.search-input-box:focus {
+    border: #555 !important;
+    outline: #555 !important;
+}
+
+.search-input-box::placeholder {
+    color: #ccc;
+}
+
+.search-icon {
+    font-size: 24px;
+    margin: auto 2px;
+}
+
+.divider {
+    margin: 20px 0;
+    border: 1px solid #555;
+}
+
+.container {
+    display: flex;
+    gap: 12px;
+    /*background-color: antiquewhite;*/
+    height: 632px;
+    width: 600px;
+    padding: 0 !important;
+}
+
+.sections-wrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    padding-left: 4px;
+    padding-top: 36px;
+    box-sizing: border-box;
+    gap: 18px;
+    /*background-color: aquamarine;*/
+    height: 100%;
+    width: 160px;
+    min-width: 160px;
+    font-size: larger;
+    overflow: scroll;
+}
+
+.vertical-divider {
+    border: 1px solid #555;
+    height: 100%;
+}
+
+.settings-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /*background-color: blueviolet;*/
+    color: white;
+    height: 100%;
+    width: 410px;
+    text-align: left;
+    padding-left: 24px;
+    padding-top: 32px;
+    box-sizing: border-box;
+    overflow: scroll;
+}
+
+.section {
+    color: white;
+}
+.section:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.section.active {
+    background-color: rgba(255, 255, 255, 0.4);
+    font-weight: 500;
+}
+/*
+
+.section.active {
+    background-color: #757568;
+    padding: 10px 4px;
+    border-radius: 4px;
+}
+
+.section:hover {
+    color: #cdcdcd;
+}
+*/
+
+.section.has-sub-section {
+    display: flex;
+    gap: 8px;
+}
+
+.open-sub-menu {
+    background-color: #2c2c2c;
+    height: 14px;
+    width: 14px;
+    padding-top: 2px;
+}
+
+.open-sub-menu.active {
+    background-color: #757568;
+}
+
+.menu-item-heading {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.settings {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    color: white;
+}
+
+.setting {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.setting h1 {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: white;
+}
+
+.info-icon {
+    margin-left: 10px;
+    border: 1px solid white;
+    padding: 2px;
+    border-radius: 50%;
+}
+
+/*
+
+.setting-title {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.setting-description {
+    font-size: 12px;
+    font-weight: 400;
+    color: #cdcdcd;
+}
+
+
+.setting-value.large-input input {
+    width: 320px !important;
+}
+
+.setting-value.medium-input input {
+    width: 240px !important;
+}
+
+.setting-value.small-input input {
+    width: 160px !important;
+}
+
+.setting-value.checkbox input {
+    margin-top: 4px;
+    transform: scale(1.5);
+}
+*/
+
+/* to add styles to other properties use:
+ * `.setting-value.dropdown select`
+ * `.setting-value.scroll-bar input`
+ * */
