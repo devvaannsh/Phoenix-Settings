@@ -16,29 +16,75 @@ define(function (require, exports, module) {
     };
 
     const SECTION_TYPES = {
-        HEADING1: "heading1", // for section heading
-        DROPDOWN: "dropdown", // setting value - dropdown
-        NUMBER: "number", // setting value - input type number
-        TEXT: "text", // setting value - input type text
-        CHECKBOX: "checkbox", // setting value - input type checkbox
-        SCROLLBAR: "scrollbar" // setting value - scrollbar
+        HEADING1: "heading1",
+        DROPDOWN: "dropdown",
+        NUMBER: "number",
+        TEXT: "text",
+        CHECKBOX: "checkbox",
+        SCROLLBAR: "scrollbar"
     };
 
-    // Fetch the DOM element (added to global to improve efficiency as we won't need to fetch it everytime while working with it)
+    // Fetch the DOM elements
     const SECTIONS_WRAPPER = document.querySelector("#sections-wrapper");
     const SETTINGS_WRAPPER = document.querySelector("#settings");
 
     // Track the active section
     let activeSection = SECTIONS.EDITOR; // Default active section
 
+    // Store valid extension section IDs
+    const validExtensionSections = new Map(); // Maps extensionSectionID to extensionID
+
     /**
-     * This function is responsible to add a setting to a specific section
-     *
-     * @private
-     * @param {String} section - Section identifier from SECTIONS
-     * @param {String} type - Setting type from SECTION_TYPES
-     * @param {Object|String} config - Setting configuration in the form of an Object. It may also be plain String, which is when a heading is to be added to the setting element.
+     * Creates a new section for an extension's settings
+     * 
+     * @param {String} extensionID - Unique identifier for the extension
+     * @param {String} extensionName - Display name for the extension section
+     * @returns {String} Unique section identifier for the extension
      */
+    function createExtensionSection(extensionID, extensionName = "Extension Name") {
+        // Generate a unique section ID
+        const extensionSectionID = `${extensionID}-${crypto.randomUUID()}`;
+        
+        // Store the mapping for validation
+        validExtensionSections.set(extensionSectionID, extensionID);
+
+        // Create a container for the extension's settings
+        const section = document.createElement("div");
+        section.className = "section extension-section";
+        section.textContent = extensionName;
+        section.dataset.extensionId = extensionID;
+
+        // Add click handler for section switching
+        section.addEventListener("click", () => {
+            switchSection(extensionSectionID);
+        });
+
+        SECTIONS_WRAPPER.appendChild(section);
+
+        // Add the extension section heading
+        _addSetting(extensionSectionID, SECTION_TYPES.HEADING1, extensionName);
+
+        return extensionSectionID;
+    }
+
+    /**
+     * Adds a setting to an extension section
+     * 
+     * @param {String} extensionSectionID - Section ID returned by createExtensionSection
+     * @param {String} type - Setting type from SECTION_TYPES
+     * @param {Object} config - Setting configuration
+     */
+    function addExtensionSetting(extensionSectionID, type, config) {
+        // Validate that this is a legitimate extension section
+        if (!validExtensionSections.has(extensionSectionID)) {
+            console.error("Invalid extension section ID");
+            return;
+        }
+
+        // Use the existing _addSetting function with the extension's section ID
+        _addSetting(extensionSectionID, type, config);
+    }
+
     function _addSetting(section, type, config) {
         if (!SETTINGS_WRAPPER) {
             console.error("Settings wrapper not found in the panel");
@@ -191,7 +237,8 @@ define(function (require, exports, module) {
         // Update section highlighting
         const sections = SECTIONS_WRAPPER.querySelectorAll(".section");
         sections.forEach((section) => {
-            if (section.textContent === newSection) {
+            if (section.textContent === newSection || 
+                (section.dataset.extensionId && section.dataset.extensionId === validExtensionSections.get(newSection))) {
                 section.classList.add("active");
             } else {
                 section.classList.remove("active");
@@ -220,7 +267,6 @@ define(function (require, exports, module) {
             _addSetting(sectionName, SECTION_TYPES.HEADING1, sectionName);
         });
 
-        // dropdown input type example
         _addSetting(SECTIONS.EDITOR, SECTION_TYPES.DROPDOWN, {
             settingID: "editor.font_family",
             title: "Font Family",
@@ -230,7 +276,6 @@ define(function (require, exports, module) {
             defaultValue: "Ariel"
         });
 
-        // number input type example
         _addSetting(SECTIONS.APPEARANCE, SECTION_TYPES.NUMBER, {
             settingID: "appearance.font_size",
             title: "Font Size",
@@ -239,7 +284,6 @@ define(function (require, exports, module) {
             defaultValue: 14
         });
 
-        // checkbox section type example
         _addSetting(SECTIONS.ADVANCED, SECTION_TYPES.CHECKBOX, {
             settingID: "advanced.word_wrap",
             title: "Word Wrap",
@@ -247,7 +291,6 @@ define(function (require, exports, module) {
             defaultValue: true
         });
         
-        // scroll bar example
         _addSetting(SECTIONS.APPEARANCE, SECTION_TYPES.SCROLLBAR, {
             settingID: "appearance.line_height",
             title: "Line Height",
@@ -256,15 +299,31 @@ define(function (require, exports, module) {
             defaultValue: 1.5
         });
         
-        // text input type example
         _addSetting(SECTIONS.EDITOR, SECTION_TYPES.TEXT, {
             settingID: "editor.themes",
             title: "Themes",
             description: "Choose a theme",
             defaultValue: "Phoenix Dark"
         });
+
+        // Create a new extension section
+        const sectionID = createExtensionSection("my-extension-id", "My Extension Name");
+
+        // Add settings to the extension section
+        addExtensionSetting(sectionID, SECTION_TYPES.CHECKBOX, {
+            settingID: "my-extension.enabled",
+            title: "Enable Feature",
+            description: "Toggle this feature on/off",
+            defaultValue: true
+        });
         
     }
 
     _init();
+
+    // Export the extension-related functions
+    module.exports = {
+        createExtensionSection,
+        addExtensionSetting
+    };
 });
