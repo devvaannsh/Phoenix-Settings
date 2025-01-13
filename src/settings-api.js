@@ -16,15 +16,15 @@ define(function (require, exports, module) {
     };
 
     const SECTION_TYPES = {
-        HEADING1: "heading1",
-        DROPDOWN: "dropdown",
-        NUMBER: "number",
-        TEXT: "text",
-        CHECKBOX: "checkbox",
-        SCROLLBAR: "scrollbar"
+        HEADING1: "heading1", // for section heading
+        DROPDOWN: "dropdown", // setting value - dropdown
+        NUMBER: "number", // setting value - input type number
+        TEXT: "text", // setting value - input type text
+        CHECKBOX: "checkbox", // setting value - input type checkbox
+        SCROLLBAR: "scrollbar" // setting value - scrollbar
     };
 
-    // Fetch the DOM elements
+    // Fetch the DOM element (added to global to improve efficiency as we won't need to fetch it everytime while working with it)
     const SECTIONS_WRAPPER = document.querySelector("#sections-wrapper");
     const SETTINGS_WRAPPER = document.querySelector("#settings");
 
@@ -33,6 +33,9 @@ define(function (require, exports, module) {
 
     // Store valid extension section IDs
     const validExtensionSections = new Map(); // Maps extensionSectionID to extensionID
+
+    // Create extensions container to manage extension sections
+    let extensionsContainer = null;
 
     /**
      * Creates a new section for an extension's settings
@@ -50,16 +53,21 @@ define(function (require, exports, module) {
 
         // Create a container for the extension's settings
         const section = document.createElement("div");
-        section.className = "section extension-section";
+        // section.className = "section extension-section";
         section.textContent = extensionName;
         section.dataset.extensionId = extensionID;
+        section.dataset.sectionId = extensionSectionID;
 
         // Add click handler for section switching
-        section.addEventListener("click", () => {
+        section.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent triggering parent clicks
             switchSection(extensionSectionID);
         });
 
-        SECTIONS_WRAPPER.appendChild(section);
+        // Add to extensions container
+        if (extensionsContainer) {
+            extensionsContainer.querySelector('.sub-sections').appendChild(section);
+        }
 
         // Add the extension section heading
         _addSetting(extensionSectionID, SECTION_TYPES.HEADING1, extensionName);
@@ -83,6 +91,60 @@ define(function (require, exports, module) {
 
         // Use the existing _addSetting function with the extension's section ID
         _addSetting(extensionSectionID, type, config);
+    }
+
+    /**
+     * Creates the Extensions section with dropdown functionality
+     * 
+     * @private
+     * @returns {HTMLElement} The created extensions section element
+     */
+    function _createExtensionsSection() {
+        const section = document.createElement("div");
+        section.className = "section has-sub-section";
+        
+        const menuName = document.createElement("div");
+        menuName.className = "menu-item-name";
+        menuName.textContent = SECTIONS.EXTENSIONS;
+
+        const openSubMenu = document.createElement("div");
+        openSubMenu.className = "open-sub-menu";
+        
+        // Right arrow SVG
+        openSubMenu.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" fill="white"/>
+        </svg>`;
+
+        // Container for extension sub-sections
+        const subSections = document.createElement("div");
+        subSections.className = "sub-sections";
+        subSections.style.display = "none";
+
+        section.appendChild(menuName);
+        section.appendChild(openSubMenu);
+        section.appendChild(subSections);
+
+        // Toggle sub-sections visibility
+        section.addEventListener("click", (e) => {
+            const isOpen = section.classList.contains("open");
+            if (isOpen) {
+                section.classList.remove("open");
+                subSections.style.display = "none";
+                // Change to right arrow
+                openSubMenu.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" fill="white"/>
+                </svg>`;
+            } else {
+                section.classList.add("open");
+                subSections.style.display = "block";
+                // Change to down arrow
+                openSubMenu.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" fill="white"/>
+                </svg>`;
+            }
+        });
+
+        return section;
     }
 
     function _addSetting(section, type, config) {
@@ -204,6 +266,12 @@ define(function (require, exports, module) {
             return;
         }
 
+        if (sectionName === SECTIONS.EXTENSIONS) {
+            extensionsContainer = _createExtensionsSection();
+            SECTIONS_WRAPPER.appendChild(extensionsContainer);
+            return;
+        }
+
         // Create the new menu item
         const section = document.createElement("div");
         section.className = "section";
@@ -237,11 +305,16 @@ define(function (require, exports, module) {
         // Update section highlighting
         const sections = SECTIONS_WRAPPER.querySelectorAll(".section");
         sections.forEach((section) => {
-            if (section.textContent === newSection || 
-                (section.dataset.extensionId && section.dataset.extensionId === validExtensionSections.get(newSection))) {
-                section.classList.add("active");
-            } else {
-                section.classList.remove("active");
+            // Handle both main sections and extension sections
+            if (!section.classList.contains('has-sub-section')) {
+                const isExtensionSection = section.dataset.sectionId === newSection;
+                const isMainSection = section.textContent === newSection;
+                
+                if (isExtensionSection || isMainSection) {
+                    section.classList.add("active");
+                } else {
+                    section.classList.remove("active");
+                }
             }
         });
 
@@ -267,6 +340,7 @@ define(function (require, exports, module) {
             _addSetting(sectionName, SECTION_TYPES.HEADING1, sectionName);
         });
 
+        // dropdown input type example
         _addSetting(SECTIONS.EDITOR, SECTION_TYPES.DROPDOWN, {
             settingID: "editor.font_family",
             title: "Font Family",
@@ -276,6 +350,7 @@ define(function (require, exports, module) {
             defaultValue: "Ariel"
         });
 
+        // number input type example
         _addSetting(SECTIONS.APPEARANCE, SECTION_TYPES.NUMBER, {
             settingID: "appearance.font_size",
             title: "Font Size",
@@ -284,6 +359,7 @@ define(function (require, exports, module) {
             defaultValue: 14
         });
 
+        // checkbox input type example
         _addSetting(SECTIONS.ADVANCED, SECTION_TYPES.CHECKBOX, {
             settingID: "advanced.word_wrap",
             title: "Word Wrap",
@@ -291,6 +367,7 @@ define(function (require, exports, module) {
             defaultValue: true
         });
         
+        // scroll bar example
         _addSetting(SECTIONS.APPEARANCE, SECTION_TYPES.SCROLLBAR, {
             settingID: "appearance.line_height",
             title: "Line Height",
@@ -299,6 +376,7 @@ define(function (require, exports, module) {
             defaultValue: 1.5
         });
         
+        // text input type example
         _addSetting(SECTIONS.EDITOR, SECTION_TYPES.TEXT, {
             settingID: "editor.themes",
             title: "Themes",
