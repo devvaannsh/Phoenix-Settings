@@ -16,11 +16,12 @@ define(function (require, exports, module) {
     };
 
     const SECTION_TYPES = {
-        HEADING1: "heading1",
-        HEADING2: "heading2",
-        PARAGRAPH: "paragraph",
-        DROPDOWN: "dropdown",
-        NUMBER: "number"
+        HEADING1: "heading1", // for section heading
+        DROPDOWN: "dropdown", // setting value - dropdown
+        NUMBER: "number", // setting value - input type number
+        TEXT: "text", // setting value - input type text
+        CHECKBOX: "checkbox", // setting value - input type checkbox
+        SCROLLBAR: "scrollbar" // setting value - scrollbar
     };
 
     // Fetch the DOM element (added to global to improve efficiency as we won't need to fetch it everytime while working with it)
@@ -46,22 +47,95 @@ define(function (require, exports, module) {
 
         const settingContainer = document.createElement("div");
         settingContainer.className = "setting";
-        settingContainer.dataset.section = section; // Add the section identifier
+        settingContainer.dataset.section = section;
 
-        // For headings, we don't need the setting structure as this is just text
-        if ([SECTION_TYPES.HEADING1, SECTION_TYPES.HEADING2].includes(type)) {
-            // if the type is heading then the config must be a string only.
+        // Handle headings differently as they don't need the full setting structure
+        if (type === SECTION_TYPES.HEADING1) {
             if (typeof config !== "string") {
                 console.error("If section type is a heading, then the config must be string");
                 return;
             }
+            const heading = document.createElement("h1");
+            heading.textContent = config;
+            settingContainer.appendChild(heading);
+        } else {
 
-            if (type === SECTION_TYPES.HEADING1) {
-                const heading = document.createElement("h1");
-                heading.textContent = config;
+            // TODO: some properties must be mandatorily present such as setting id, setting tite=ke, 
 
-                settingContainer.appendChild(heading);
+            // For all other types, create the standard setting structure
+            // Setting Title
+            const titleDiv = document.createElement("div");
+            titleDiv.className = "setting-title";
+            titleDiv.textContent = config.title;
+
+            // Info icon if info is provided
+            if (config.info) {
+                const infoIcon = document.createElement("span");
+                infoIcon.className = "info-icon";
+                infoIcon.textContent = "i";
+                infoIcon.title = config.info;
+                titleDiv.appendChild(infoIcon);
             }
+
+            // Setting Description
+            const descDiv = document.createElement("div");
+            descDiv.className = "setting-description";
+            descDiv.textContent = config.description || "";
+
+            // Setting Value container
+            const valueDiv = document.createElement("div");
+            valueDiv.className = "setting-value";
+
+            // Create the appropriate input based on type
+            let input;
+            switch (type) {
+                case SECTION_TYPES.DROPDOWN:
+                    input = document.createElement("select");
+                    config.options.forEach((option) => {
+                        const optElement = document.createElement("option");
+                        optElement.value = option;
+                        optElement.textContent = option;
+                        optElement.selected = option === config.defaultValue;
+                        input.appendChild(optElement);
+                    });
+                    break;
+
+                case SECTION_TYPES.NUMBER:
+                    input = document.createElement("input");
+                    input.type = "number";
+                    input.value = config.defaultValue || 0;
+                    break;
+
+                case SECTION_TYPES.TEXT:
+                    input = document.createElement("input");
+                    input.type = "text";
+                    input.value = config.defaultValue || "";
+                    break;
+
+                case SECTION_TYPES.CHECKBOX:
+                    input = document.createElement("input");
+                    input.type = "checkbox";
+                    input.checked = config.defaultValue || false;
+                    break;
+
+                case SECTION_TYPES.SCROLLBAR:
+                    input = document.createElement("input");
+                    input.type = "range";
+                    input.min = config.min || 0;
+                    input.max = config.max || 100;
+                    input.value = config.defaultValue || 0;
+                    break;
+            }
+
+            if (input) {
+                input.id = config.settingID;
+                valueDiv.appendChild(input);
+            }
+
+            // Append all elements to the container
+            settingContainer.appendChild(titleDiv);
+            settingContainer.appendChild(descDiv);
+            settingContainer.appendChild(valueDiv);
         }
 
         // Initially hide settings that don't belong to active section
@@ -145,6 +219,51 @@ define(function (require, exports, module) {
             _createMainSection(sectionName);
             _addSetting(sectionName, SECTION_TYPES.HEADING1, sectionName);
         });
+
+        // dropdown input type example
+        _addSetting(SECTIONS.EDITOR, SECTION_TYPES.DROPDOWN, {
+            settingID: "editor.font_family",
+            title: "Font Family",
+            description: "Optional description to show below the title",
+            info: "Optional description info on hover over an i icon",
+            options: ["times new roman", "comic sans", "ariel"],
+            defaultValue: "Ariel"
+        });
+
+        // number input type example
+        _addSetting(SECTIONS.APPEARANCE, SECTION_TYPES.NUMBER, {
+            settingID: "appearance.font_size",
+            title: "Font Size",
+            description: "Specify the font size in pixels",
+            info: "Values between 8 and 72 are recommended",
+            defaultValue: 14
+        });
+
+        // checkbox section type example
+        _addSetting(SECTIONS.ADVANCED, SECTION_TYPES.CHECKBOX, {
+            settingID: "advanced.word_wrap",
+            title: "Word Wrap",
+            description: "Enable word wrapping in the editor",
+            defaultValue: true
+        });
+        
+        // scroll bar example
+        _addSetting(SECTIONS.APPEARANCE, SECTION_TYPES.SCROLLBAR, {
+            settingID: "appearance.line_height",
+            title: "Line Height",
+            description: "Vertical space in between the lines",
+            info: "Values between 1.2 and 1.8 are recommended",
+            defaultValue: 1.5
+        });
+        
+        // text input type example
+        _addSetting(SECTIONS.EDITOR, SECTION_TYPES.TEXT, {
+            settingID: "editor.themes",
+            title: "Themes",
+            description: "Choose a theme",
+            defaultValue: "Phoenix Dark"
+        });
+        
     }
 
     _init();

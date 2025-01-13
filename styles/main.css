@@ -162,6 +162,14 @@
     letter-spacing: 1px;
     color: white;
 }
+
+.info-icon {
+    margin-left: 10px;
+    border: 1px solid white;
+    padding: 2px;
+    border-radius: 50%;
+}
+
 /*
 
 .setting-title {
